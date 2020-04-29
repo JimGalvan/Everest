@@ -72,6 +72,7 @@ public class SyncManager {
 
         return history;
     }
+    // found it! //
     
     public void clearHistory() {
     	managers.get("SQLite").clearHistory();

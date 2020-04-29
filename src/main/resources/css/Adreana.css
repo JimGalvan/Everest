@@ -68,6 +68,11 @@
     -fx-background-color: #282828;
 }
 
+#clearButton {
+    -fx-background-color: #282828;
+}
+
+
 #responseDetails {
     -fx-background-color: #1b1b1b;
 }
