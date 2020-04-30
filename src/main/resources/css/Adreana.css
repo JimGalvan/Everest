@@ -96,7 +96,9 @@
 #errorLayer {
     -fx-background-color: #822f2f;
 }
-
+#statusCode{
+	    font-color: green;
+}
 #cancelButton {
     -fx-background-color: black;
 }

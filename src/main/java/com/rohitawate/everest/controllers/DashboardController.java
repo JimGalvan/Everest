@@ -16,6 +16,7 @@
 package com.rohitawate.everest.controllers;
 
 import com.jfoenix.controls.JFXButton;
+import javafx.scene.paint.Color;
 import com.jfoenix.controls.JFXProgressBar;
 import com.jfoenix.controls.JFXSnackbar;
 import com.rohitawate.everest.controllers.auth.AuthTabController;
@@ -43,14 +44,18 @@ import com.rohitawate.everest.sync.SyncManager;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
 import org.fxmisc.flowless.VirtualizedScrollPane;
@@ -211,7 +216,24 @@ public class DashboardController implements Initializable {
         responseHeadersViewer = new ResponseHeadersViewer();
         responseHeadersTab.setContent(responseHeadersViewer);
     }
+    
+    @FXML
+    void copyBody(ActionEvent event) {
+    	
+    	Alert a = new Alert(AlertType.INFORMATION); 
+    	a.setContentText("The result has been copied to clipboard"); 
+    	a.show();
+    	 
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(responseArea.getText());
+        clipboard.setContent(content);
 
+
+    }
+    
+    
+    	
     @FXML
     void sendRequest() {
         if (requestManager != null) {
@@ -395,7 +417,17 @@ public class DashboardController implements Initializable {
     private void showResponse(EverestResponse response) {
         if (response == null)
             return;
-
+        
+        if ( response.getStatusCode() == 200) {
+        	statusCode.setTextFill(Color.web("#006600"));
+            statusCodeDescription.setTextFill(Color.web("#006600"));
+        } 
+        
+        if ( response.getStatusCode() == 404) {
+        	statusCode.setTextFill(Color.web("#ff0000"));
+            statusCodeDescription.setTextFill(Color.web("#ff0000"));
+        } 
+        
         prettifyResponseBody(response);
         statusCode.setText(Integer.toString(response.getStatusCode()));
         statusCodeDescription.setText(EverestResponse.getReasonPhrase(response.getStatusCode()));

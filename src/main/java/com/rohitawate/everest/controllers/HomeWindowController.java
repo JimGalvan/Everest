@@ -17,6 +17,8 @@
 package com.rohitawate.everest.controllers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXButton.ButtonType;
 import com.rohitawate.everest.logging.LoggingService;
 import com.rohitawate.everest.misc.EverestUtilities;
 import com.rohitawate.everest.misc.KeyMap;
@@ -29,11 +31,17 @@ import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -47,6 +55,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class HomeWindowController implements Initializable {
@@ -205,24 +214,39 @@ public class HomeWindowController implements Initializable {
         tabPane.getSelectionModel().select(newTab);
         onTabSwitched(prevState, prevTab, newTab);
 
-        newTab.setOnCloseRequest(e -> {
-            removeTab(newTab);
+		newTab.setOnCloseRequest(e -> {
 
-            // Closes the application if the last tab is closed
-            if (tabPane.getTabs().size() == 0) {
-                saveState();
-                Stage thisStage = (Stage) homeWindowSP.getScene().getWindow();
-                thisStage.close();
-            }
-        });
-    }
+			// Closes the application if the last tab is closed
+			// Modified by Jim
+
+			if (tabPane.getTabs().size() == 1) {
+				e.consume();
+				Alert a = new Alert(AlertType.CONFIRMATION);
+				a.setContentText("This is the last tab, are you sure you want to close it?");
+
+				Optional<javafx.scene.control.ButtonType> result = a.showAndWait();
+
+				if (result.get() == javafx.scene.control.ButtonType.OK) {
+					System.out.println("OK!");
+					saveState();
+					Stage thisStage = (Stage) homeWindowSP.getScene().getWindow();
+					thisStage.close();
+				}
+			} else
+				removeTab(newTab);
+
+		});
+
+	}
 
     private void removeTab(Tab newTab) {
+
         DashboardState state = tabStateMap.remove(newTab);
         state = null;
         tabPane.getTabs().remove(newTab);
         newTab.setOnCloseRequest(null);
         newTab = null;
+        
     }
 
     private void saveState() {
